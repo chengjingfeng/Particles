@@ -28,7 +28,10 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let mic = AKMicrophone()
+        guard let mic = AKMicrophone() else {
+            AKLog("Could not create AudioKit microphone!")
+            return
+        }
 
         fft = AKFFTTap(mic)
 
@@ -40,7 +43,7 @@ class ViewController: UIViewController {
 
         AudioKit.output = noAudioOutput
         do {
-            try AudioKit.start()         
+            try AudioKit.start()
         } catch {
             AKLog("AudioKit did not start!")
         }
@@ -53,9 +56,9 @@ class ViewController: UIViewController {
             let hiMax = fftData[count / 2 ... count - 1].max() ?? 0
             let hiMin = fftData[count / 2 ... count - 1].min() ?? 0
 
-            let lowMaxIndex = fftData.index(of: lowMax) ?? 0
-            let hiMaxIndex = fftData.index(of: hiMax) ?? 0
-            let hiMinIndex = fftData.index(of: hiMin) ?? 0
+            let lowMaxIndex = fftData.firstIndex(of: lowMax) ?? 0
+            let hiMaxIndex = fftData.firstIndex(of: hiMax) ?? 0
+            let hiMinIndex = fftData.firstIndex(of: hiMin) ?? 0
 
             self.amplitude = Float(self.amplitudeTracker.amplitude * 25)
 
